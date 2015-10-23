@@ -15,7 +15,8 @@ Mongo stores data in [BSON format](http://bsonspec.org/)
 > **return_field** - example {name: false, age: true} will return a document with age field, but without the name field
 
 # Creating
-It simple as `.insert({Object})`, which create a new document from given `Object`.
+## Query methods
+- `.insert({Object})`, which create a new document from given `Object`.
 
 # Reading
 ## Query methods
@@ -37,4 +38,12 @@ It simple as `.insert({Object})`, which create a new document from given `Object
 > When working with cursors in mongo shell end command with `null;` such as `cur = db.people.find(); null;` so that the query doesn't get executed un you can `.limit(<NUMBER>)` or `.sort({Query})`, `.skip(<NUMBER>)` to the cursor. Note that the methods must also end with `null;` because they are executed server side and can be added at any point before the first document is called and before you've checked to see if it is empty.
 
 # Updating
-- *replacing update* - `update({Query}, {NEW_DOCUMENT})`, which would find all rows that match the Query and and **override** the current document with the new document.
+## Query methods
+- `update({Query}, {NEW_DOCUMENT})` - *replacing update*, which would find all rows that match the Query and and **override** the current document with the new document.
+
+## Query operators
+- `$set`, example query `({name : "Alice"}, {$set: {age: 30}})` will update or add an age property to the documents whos name is "Alice".
+- `$inc`, example query `({name : "Alice"}, {$inc: {age: 1}})`, will either add the increment age if the document doesn't have already or increment the current age by the value given for all documents which name is "Alice".
+- `$unset`, example query `({name: "Jones"}, {$unset: {profession: 1}})` will remove the "profession" key from all the documents that the query.
+
+
