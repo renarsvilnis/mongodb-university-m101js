@@ -2,10 +2,10 @@
 > MongoDB doesn't have a query language, it just depends on the language your using the MongoDB driver
 
 ## Crud semantics in MongoDB
-- Create === Insert
-- Read === Find
-- Update === Update
-- Remove === Delete
+- `Create === Insert
+- `Read === Find
+- `Update === Update
+- `Remove === Delete
 
 ## BSON
 Mongo stores data in [BSON format](http://bsonspec.org/)
@@ -66,4 +66,5 @@ Passing a third argument to an update functions are options.
 - `drop()` - would drop all documents form a collection more efficiently then using `remove` as it doesn't need to execute the remove for each document.
 
 > **Using drop will remove all the indexes!** But it is still a good option to drop the collection and create the indexes afterwards rather then using remove.
+
 > Drop and remove operations are affected by yielding.

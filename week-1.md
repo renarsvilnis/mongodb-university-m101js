@@ -13,11 +13,10 @@ $ chmod 777 /data/db
 $ exit
 ```
 
-> Database === Database
-
-> Collection === Table
-
-> Document === Row
+## Database naming semantics in MongoDB
+- `Database === Database`
+- `Collection === Table`
+- `Document === Row`
 
 ## `save` vs `insert`
 - `save` - inserts or updates a document depending if `_id` key is passed and a record exists.
