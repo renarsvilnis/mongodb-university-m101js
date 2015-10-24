@@ -42,8 +42,28 @@ Mongo stores data in [BSON format](http://bsonspec.org/)
 - `update({Query}, {NEW_DOCUMENT})` - *replacing update*, which would find all rows that match the Query and and **override** the current document with the new document.
 
 ## Query operators
-- `$set`, example query `({name : "Alice"}, {$set: {age: 30}})` will update or add an age property to the documents whos name is "Alice".
+- `$set`, example query `({name : "Alice"}, {$set: {age: 30}})` will update or add an age property to the documents whos name is "Alice". `$set` can also update array nth array element by adding an index to the key by the dot notation, example for a document `{_id: 0, a: [1,2,3,4]}` the query `({_id: 0}, {$set: {a.2: 5}})` woudl result in the 3rd array element changing from 3 to 5.
 - `$inc`, example query `({name : "Alice"}, {$inc: {age: 1}})`, will either add the increment age if the document doesn't have already or increment the current age by the value given for all documents which name is "Alice".
 - `$unset`, example query `({name: "Jones"}, {$unset: {profession: 1}})` will remove the "profession" key from all the documents that the query.
+- `$push`, example query `({_id: 0}, {$push: {a: 6}})` for the document with id equal to 0 would add a 6 into the document array by key `a`.
+- `$pop`, example query `({_id: 0}, {$pop: {a: 1}})` would pop the right side value for the document with the id equal to 0. Alternativly you can put a negative one, example `{$pop: {a: -1}}`, to pop the left side value of the array.
+- `$pushAll` (**deprecated**) - instead os `$push`operator with `$each`. Example `{$push: {<field>: {$each: [<value1>, <value2>,..]}}}`.
+- `$pull`, example query `({_id: 0}, {$pull: {a: 5}})` will remove all instances of 5 in the `a` array of the document which id is equal to 0.
+- `$pullAll`, example query `({_id: 0}, {$pullAll: {a: [1, 2, 3]}})` will remove all instances of `1, 2, 3` from the document which id is equal to 0.
+- `$addToSet`, example query `({_id: 0}, {$addToSet: {a: 5}})` will add a value 5 to the array `a` if the value doesn't exist for a document which id is equal to 0.
 
+## Update options
+Passing a third argument to an update functions are options.
 
+- `upsert`, example query `({name : "Alice"}, {$set: {age: 30}}), {upsert: true}`, will create a new document if document doesn't exist with the name `Alice`. If the selector query doesn't specify one exact document but does similar as age `$gt` (*greater*) then 50, then MongoDB will create a new document but leave out any fields that don't have a concrete value, in this case age.
+- `multi`, example query `({}, {$set: {title: "Dr"}}, {multi: true})` will update all documents and set title `Dr` without adding `multi` it would only update one document, probably the first one.
+
+> yielding - if a new read/write command comes in during a multi update, the multi update would pause, then execute the read/write and continue the multiupdate. It is not no possible in MongoDB to guarantee an isolated multi write operation (transaction), but it each individual document is guaranteed to be atomic, that is any other read/write operation would not have a half writen document.
+
+# Deleting
+## Query methods
+- `remove({Query})` - would remove all documents that match the Query. If you want to remove all documents you need to pass an empty document, example `db.users.remove({})` would remove all users from the users collection.
+- `drop()` - would drop all documents form a collection more efficiently then using `remove` as it doesn't need to execute the remove for each document.
+
+> **Using drop will remove all the indexes!** But it is still a good option to drop the collection and create the indexes afterwards rather then using remove.
+> Drop and remove operations are affected by yielding.
