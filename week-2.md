@@ -34,15 +34,21 @@ Mongo stores data in [BSON format](http://bsonspec.org/)
 - `$all: [list]`, example query `{favorites: {$all: ["pretzels", "bear"]}}` will return all documents that have in their favorites "pretzels" and "bear".
 - `$in: [list]`, example query `{name: {$in: ["Howard", "John"]}}` will return all documents that have name either Howard or John. Can use `$in` to check if any document array field is in the given list for `$in`.
 - *Dot notation* - it is possible to query subdocuments with dot notation. Example - `db.users.find({"email.work": "name.surname@domain.com"})` will return all documents whos work email mathches `name.surname@domain.com`.
+- `$nin`, example query `{x: {$nin: []}}` would match all documents in a collection as no document will the have a `x` value that is in the nin specified array `[]`, it will also match documents that don't have an `x` property. `$nin` is used to select documents whose field value isn't in the specified array or the field doesn't exist.
 
 > When working with cursors in mongo shell end command with `null;` such as `cur = db.people.find(); null;` so that the query doesn't get executed un you can `.limit(<NUMBER>)` or `.sort({Query})`, `.skip(<NUMBER>)` to the cursor. Note that the methods must also end with `null;` because they are executed server side and can be added at any point before the first document is called and before you've checked to see if it is empty.
+
+> 1.Sort -> 2.Skip -> 3.Limit happens in this order. **The node driver will resort them by that order!**
 
 # Updating
 ## Query methods
 - `update({Query}, {NEW_DOCUMENT})` - *replacing update*, which would find all rows that match the Query and and **override** the current document with the new document.
 
 ## Query operators
-- `$set`, example query `({name : "Alice"}, {$set: {age: 30}})` will update or add an age property to the documents whos name is "Alice". `$set` can also update array nth array element by adding an index to the key by the dot notation, example for a document `{_id: 0, a: [1,2,3,4]}` the query `({_id: 0}, {$set: {a.2: 5}})` woudl result in the 3rd array element changing from 3 to 5.
+- `$set` - *implace update*, example query `({name : "Alice"}, {$set: {age: 30}})` will update or add an age property to the documents whos name is "Alice". `$set` can also update array nth array element by adding an index to the key by the dot notation, example for a document `{_id: 0, a: [1,2,3,4]}` the query `({_id: 0}, {$set: {a.2: 5}})` woudl result in the 3rd array element changing from 3 to 5.
+
+> When mixing *replace update* with an update with some update query operator then it will return an error.
+
 - `$inc`, example query `({name : "Alice"}, {$inc: {age: 1}})`, will either add the increment age if the document doesn't have already or increment the current age by the value given for all documents which name is "Alice".
 - `$unset`, example query `({name: "Jones"}, {$unset: {profession: 1}})` will remove the "profession" key from all the documents that the query.
 - `$push`, example query `({_id: 0}, {$push: {a: 6}})` for the document with id equal to 0 would add a 6 into the document array by key `a`.
@@ -68,3 +74,8 @@ Passing a third argument to an update functions are options.
 > **Using drop will remove all the indexes!** But it is still a good option to drop the collection and create the indexes afterwards rather then using remove.
 
 > Drop and remove operations are affected by yielding.
+
+# Node.js driver
+## `save` vs `insert`
+- `save` - inserts or updates a document depending if `_id` key is passed and a record exists. Shorthand for an upsert.
+- `insert` - does only an insertion.
