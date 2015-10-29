@@ -10,8 +10,8 @@ Choosing when to embed data into document:
 - size of items
 - atomicity of data
 
-- One-to-One - 1-2 collections
-- One-to-Many - 2 collections
+- One-to-One - 1-2 collections, but 1 collection is fine enough
+- One-to-Many - 1-2 collections, but in case of 1 in the direction from many to one
 - One-to-Few - 1-2 collections
 - Few-to-Few - 1-2 collections (but 2 collections prefered)
 - Many-to-Many - 2 collections
