@@ -105,7 +105,7 @@ The index size can be considerably smaller ~3x (at the cost of some CPU space) i
 
 
 ## Geospatial Indexes
-### 2D
+### 2D Geospatial Indexes
 #### Creation
 1. Documents must have an array of 2 values `{_id: 21, location: [24, 42]}`
 2. `db.collection.createIndex({'location': '2d'})`
@@ -113,7 +113,7 @@ The index size can be considerably smaller ~3x (at the cost of some CPU space) i
 #### Querying
 `db.collection.find({location: {$near: [x,y]}}).limit(10);` - will return 10 documents with increasing distance
 
-### 3D
+### 3D Geospatial Indexes
 MongoDB implements some parts of [geoJSON](http://geojson.org/).
 
 #### Creation
@@ -142,3 +142,82 @@ db.collection.find({
     }
 });
 ```
+
+## Full Text Indexes
+```json
+{
+    "_id": 241,
+    "words": "dog tre granite"
+}
+```
+
+### Creation
+`db.collection.createIndex({words: 'text'});`
+
+### Querying
+`db.collections.find({$text: {$search: 'dog graniate'}});`
+
+> Commas or upercase letters doesnt effect the query
+
+#### Getting the closest matching result
+```javascript
+db.collections.find({
+    $text: {
+        $search: 'dog tree graniate'
+    }
+}, {
+    score: {
+        $meta: 'textScore'
+    }
+}).sort({
+    score: {
+        $meta: 'textScore'
+    }
+});
+```
+
+
+## Designing/Using Indexes
+- selectivity - the primary factor that determines how efficiently an index can be used. Ideally, the index enables us to select only those records required to complete the result set, without the need to scan a substantially larger number of index keys (or documents) in order to complete the query. Selectivity determines how many records any subsequent operations must work with. Fewer records means less execution time.
+- other ops - are results sorted?
+
+Help mongoDB choose what index to take by hinting it, but shouldn't be uses in production that much:
+`db.students.find({student_id:{$gt:500000}, class_id:54}).sort({student_id:1}).hint({class_id:1}).explain('executionstats')`
+
+If we want to sort using something like `db.collection.find({a: 75}).sort({a: 1, b: -1})`, we must specify the index using the same directions, e.g., `db.collection.createIndex({a: 1, b: -1})`.
+
+## Logging Slow Queries
+By default logs slows queries in the mongoD console.
+
+### Profiler
+Levels:
+- 0 *default* - off
+- 1 - log slow queries
+- 2 - log all queries
+
+Launch DB as: `mongod -dbpath /usr/local/var/mongodb --profile 1 --slowms 2`
+
+Query logs: `db.system.profile.find().pretty();`
+
+Example Query specific logs: `db.system.profile.find({ns: /school.students/}).sort({ts: 1}).pretty();`
+
+Usefull commands: 
+- `db.getProfilingLevel()`
+- `db.getPorfilingStatus()`
+- `db.setProfilingLevel(1, 4)` - sets profile=1 and slowms=4
+
+## Mongotop
+`mongotop 3` - return stats on how much time spent is reading on different collections during the `3` interval. Can be used to help find slow queries.
+
+Reads IO from inserts, queries, updates, deletes.
+
+Can be used for stress testing.
+
+[Check the docs](https://docs.mongodb.org/manual/reference/program/mongostat/) for a detail description of the stats.
+
+## Sharding
+application -> mongos -> databases and replica sets
+
+Update, remove, find - use shard_key for better performance
+
+
