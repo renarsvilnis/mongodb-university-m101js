@@ -113,7 +113,7 @@ db.oplog.rs.find().pretty()
 
 ## Failover and Rollback
 
->Failover is a backup operational mode in which the functions of a system component (such as a processor, server, network, or database, for example) are assumed by secondary system components when the primary component becomes unavailable through either failure or scheduled down time. **Used to increase durability of the database**
+> Failover is a backup operational mode in which the functions of a system component (such as a processor, server, network, or database, for example) are assumed by secondary system components when the primary component becomes unavailable through either failure or scheduled down time. **Used to increase durability of the database**
 
 > In database technologies, a rollback is an operation which returns the database to some previous state. Rollbacks are important for database integrity, because they mean that the database can be restored to a clean copy even after erroneous operations are performed.
 
@@ -176,7 +176,7 @@ For shard queries you need to specify the `shard key`, else the `mongos` has to 
 > The replication availability gets parsed through shards `w` and `j`.
 
 ### Choosing a Shard Key
-- Make sure there is sufficient cardinality, choosing maybe a key doesn't have a big cardinality, so that wohuldnt not be the primary for the `sharing key`
+- Make sure there is sufficient cardinality, choosing maybe a key doesn't have a big cardinality, so that wouldn't not be the primary for the `sharing key`
 - avoids hotspoting in writes on anything that monotonically increasing. That is for the chard key avoid choosing a document key that would increase monotonically, example a timestamp as the new documents woudl get written on a single node till the enxt shard and so on.
 
 > Keep in mind the data access pattern when choosing shard keys and indexes. It's sometimes usefull to create tests on a machine.

@@ -20,7 +20,7 @@ Mongo stores data in [BSON format](http://bsonspec.org/)
 
 # Reading
 ## Query methods
-- `.find({query})` - find all documents that matches query
+- `.find({query}, {return_fields})` - find all documents that matches query
 - `.findOne({query}, {return_fields})` - find one document that matches query
 - `.count({query})` - returns the count of documents that matches the query
 
