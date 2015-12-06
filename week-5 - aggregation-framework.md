@@ -186,7 +186,7 @@ Unjoin data, example exploding a document with array field `tags`, that would cr
 
 ```javascript
 db.posts.aggregate([
-    {$undwind: "$tags"},
+    {$unwind: "$tags"},
     {
         $group: {
             _id: "$tags",
